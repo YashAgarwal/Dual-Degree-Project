@@ -1,0 +1,17 @@
+0.1
+10000
+0.1
+300
+100
+10
+0
+40
+
+delta_t for variable M,
+total number of time steps for var M,
+delta_t_M0 for const M,
+time_steps_M0 for const M,
+files will be written after this many steps,
+Theta interval,
+Theta start,
+Theta steps

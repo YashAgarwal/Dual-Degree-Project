@@ -1,0 +1,6 @@
+*.out
+*.o
+*.zip
+/output/*
+/output_BAK1/*
+/logs/*
