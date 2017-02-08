@@ -910,71 +910,14 @@ void evolve(int n_x, int n_y, double delta_x, double delta_y, double kappa_c,
       }
     }
 
+    // *************** Radius analysis ***************
+
     //Calculate the Rx and Ry of the central phase
     double *R = findRadius(c, n_x, n_y, delta_x, delta_y);
 
     //Calculate the (Rx^2 + Ry^2)/2
     pr_t[INDEX] = (R[0] * R[0] / 4.0 + R[1] * R[1] / 4.0) / 2.0;
 
-    /*********      Data Generation         **********/
-
-    if (INDEX % file_timer == 0) {
-
-      //Print the Mobility x profile to file
-      sprintf(NAME, "%s/Mx-time_%09d.dat",output_folder_name, INDEX);
-      fpw = fopen(NAME, "w");
-      for (i1 = 0; i1 < n_x; ++i1) {
-          i = (int)n_y / 2 + n_y * i1;
-          fprintf(fpw, "%d %le %le %le\n", i1, c[i], eta_r[i], M[i]);
-      }
-      fclose(fpw);
-
-      //Print the Mobility profile to file
-      sprintf(NAME, "%s/data/M-time_%09d.dat",output_folder_name, INDEX);
-      fpw = fopen(NAME, "w");
-      for (i1 = 0; i1 < n_x; ++i1) {
-        for (i2 = 0; i2 < n_y; ++i2) {
-          i = i2 + n_y * i1;
-          fprintf(fpw, "%d %d %le\n", i1, i2, M[i]);
-        }
-        fprintf(fpw, "\n");
-      }
-      fclose(fpw);
-
-      //Print the Mobility y profile to file
-      sprintf(NAME, "%s/My-time_%09d.dat",output_folder_name, INDEX);
-      fpw = fopen(NAME, "w");
-      for (i2 = 0; i2 < n_y; ++i2) {
-          i = i2 + n_y * (int)n_x/2;
-          fprintf(fpw, "%d %le %le %le\n", i2, c[i], eta_r[i], M[i]);
-      }
-      fclose(fpw);
-
-      //Print the composition and eta profile to file
-      sprintf(NAME, "%s/data/c-time_%09d.dat",output_folder_name, INDEX);
-      fpw = fopen(NAME, "w");
-      for (i1 = 0; i1 < n_x; ++i1) {
-        for (i2 = 0; i2 < n_y; ++i2) {
-          i = i2 + n_y * i1;
-          c[i] = __real__ comp[i];
-          eta_r[i] = __real__ eta[i];
-          fprintf(fpw, "%d %d %le %le\n", i1, i2, c[i], eta_r[i]);
-        }
-        fprintf(fpw, "\n");
-      }
-      fclose(fpw);
-    }
-
-    /*
-    aspect_ratio[INDEX] = sqrt(
-        1. * (R[0] * R[0] / 4.0) /
-        (sqrt(2.0) * (pr_xy1 - pr_xy2) * sqrt(2.0) * (pr_xy1 - pr_xy2) / 4.0));
-
-    fprintf(fpw1, "%le %le %le %le %le\n", INDEX * delta_t,
-            (pr_t[INDEX] - r0_new * r0_new),
-            1. * (pr_t[INDEX] - r0_new * r0_new) / (delta_x * delta_x),
-            pr_t[INDEX], aspect_ratio[INDEX]);
-    */
     fprintf(fpw1, "%le %le %le %le %le %le\n", INDEX * delta_t_M0,
                                           pr_t[INDEX],
                                           R[2], R[3], R[4], R[5]);
@@ -1000,6 +943,65 @@ void evolve(int n_x, int n_y, double delta_x, double delta_y, double kappa_c,
             1. * (pr_ta[INDEX] - r0_new * r0_new) / (delta_x * delta_x));
     */
     fprintf(fpw2, "%le %le\n", INDEX * delta_t_M0, pr_ta[INDEX]);
+
+    /*********      Data Generation         **********/
+
+    if (INDEX % file_timer == 0) {
+
+      //Print the Mobility profile to file
+      sprintf(NAME, "%s/data/M-time_%09d.dat",output_folder_name, INDEX);
+      fpw = fopen(NAME, "w");
+      for (i1 = 0; i1 < n_x; ++i1) {
+        for (i2 = 0; i2 < n_y; ++i2) {
+          i = i2 + n_y * i1;
+          fprintf(fpw, "%d %d %le\n", i1, i2, M[i]);
+        }
+        fprintf(fpw, "\n");
+      }
+      fclose(fpw);
+
+      //Print the Mobility x profile to file
+      sprintf(NAME, "%s/Mx-time_%09d.dat",output_folder_name, INDEX);
+      fpw = fopen(NAME, "w");
+      for (i1 = 0; i1 < n_x; ++i1) {
+          i = (int)n_y / 2 + n_y * i1;
+          fprintf(fpw, "%d %le %le %le\n", i1, c[i], eta_r[i], M[i]);
+      }
+      fclose(fpw);
+
+      //Print the Mobility y profile to file
+      sprintf(NAME, "%s/My-time_%09d.dat",output_folder_name, INDEX);
+      fpw = fopen(NAME, "w");
+      for (i2 = 0; i2 < n_y; ++i2) {
+          i = i2 + n_y * (int)n_x/2;
+          fprintf(fpw, "%d %le %le %le\n", i2, c[i], eta_r[i], M[i]);
+      }
+      fclose(fpw);
+
+      //Print the composition and eta profile to file
+      sprintf(NAME, "%s/data/c-time_%09d.dat",output_folder_name, INDEX);
+      fpw = fopen(NAME, "w");
+      for (i1 = 0; i1 < n_x; ++i1) {
+        for (i2 = 0; i2 < n_y; ++i2) {
+          i = i2 + n_y * i1;
+          fprintf(fpw, "%d %d %le %le\n", i1, i2, c[i], eta_r[i]);
+        }
+        fprintf(fpw, "\n");
+      }
+      fclose(fpw);
+    }
+
+    /*
+    aspect_ratio[INDEX] = sqrt(
+        1. * (R[0] * R[0] / 4.0) /
+        (sqrt(2.0) * (pr_xy1 - pr_xy2) * sqrt(2.0) * (pr_xy1 - pr_xy2) / 4.0));
+
+    fprintf(fpw1, "%le %le %le %le %le\n", INDEX * delta_t,
+            (pr_t[INDEX] - r0_new * r0_new),
+            1. * (pr_t[INDEX] - r0_new * r0_new) / (delta_x * delta_x),
+            pr_t[INDEX], aspect_ratio[INDEX]);
+    */
+
   }
   fclose(fpw1);
   fclose(fpw2);

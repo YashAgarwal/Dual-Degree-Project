@@ -1,7 +1,7 @@
 #include "../headers/functions.h"
 #include <stdlib.h>
 #define c(x,y) c[(y) + n_y * (x)]
-#define interpolate(x0, y0, x2, y2, y1) ((y1)-(y0)) * (double)((x0)-(x2))/((y2)-(y0)) + (x0)
+#define interpolate(x0, y0, x2, y2, y1) (((y1)-(y0)) * (((double)(x2)-(x0))/((y2)-(y0)))) + (x0)
 
 double* findRadius(double *c, int n_x, int n_y, double delta_x, double delta_y){
 
